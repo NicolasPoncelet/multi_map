@@ -12,6 +12,7 @@ reference_files = [fasta for fasta in os.listdir(REFERENCE_DIR) if fasta.endswit
 
 SAMPLES = list(set([fastq.split("_R")[0] for fastq in fastq_files]))
 REFERENCES = [fasta.split(".")[0] for fasta in reference_files]
+print(REFERENCES)
 
 rule all:
     input:
@@ -20,23 +21,25 @@ rule all:
 
 rule bwa_index:
     input:
-        genome = f"{REFERENCE_DIR}/{{genome}}.fasta"  # Updated input path to REFERENCE_DIR
+        ref = f"{REFERENCE_DIR}/{{genome}}.fasta"
     output:
-        genome_index = [f"{REFERENCE_DIR}/{{genome}}.amb", f"{REFERENCE_DIR}/{{genome}}.ann", 
-                        f"{REFERENCE_DIR}/{{genome}}.bwt", f"{REFERENCE_DIR}/{{genome}}.pac", 
-                        f"{REFERENCE_DIR}/{{genome}}.sa"]
-
+        amb = f'{REFERENCE_DIR}/{{genome}}.fasta.amb',
+        ann = f'{REFERENCE_DIR}/{{genome}}.fasta.ann',
+        bwt = f'{REFERENCE_DIR}/{{genome}}.fasta.bwt',
+        pac = f'{REFERENCE_DIR}/{{genome}}.fasta.pac',
+        sa  = f'{REFERENCE_DIR}/{{genome}}.fasta.sa'
     shell:
         """
-        bwa index {input.genome}
+        bwa index {input.ref}
         """
+
 
 rule bwa_map:
     input:
         read_1 = f"{FASTQ_DIR}/{{sample}}_R1.fastq.gz",
         read_2 = f"{FASTQ_DIR}/{{sample}}_R2.fastq.gz",
         genome = f"{REFERENCE_DIR}/{{genome}}.fasta",
-        index = rules.bwa_index.output.genome_index,
+        index_files = rules.bwa_index.output,  
 
     output:
         bam = f"{ANALYSIS_DIR}/Mapped_reads/{{genome}}/{{sample}}.bam",
@@ -45,6 +48,7 @@ rule bwa_map:
         """
         bwa mem {input.genome} {input.read_1} {input.read_2} | samtools view -Sb - > {output.bam}
         """
+
 
 rule samtools_sort:
     input:
