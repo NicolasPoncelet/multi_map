@@ -33,7 +33,6 @@ rule bwa_index:
         bwa index {input.ref}
         """
 
-
 rule bwa_map:
     input:
         read_1 = f"{FASTQ_DIR}/{{sample}}_R1.fastq.gz",
@@ -49,12 +48,11 @@ rule bwa_map:
         bwa mem {input.genome} {input.read_1} {input.read_2} | samtools view -Sb - > {output.bam}
         """
 
-
 rule samtools_sort:
     input:
         bam = rules.bwa_map.output.bam
     output:
-        sorted_bam = f"{ANALYSIS_DIR}/Sorted_bam/{{genome}}/{{sample}}.sorted.bam"
+        sorted_bam = f"{ANALYSIS_DIR}/Mapped_reads/{{genome}}/{{sample}}.sorted.bam"
 
     shell:
         """
@@ -65,7 +63,7 @@ rule samtools_index:
     input:
         sorted_bam = rules.samtools_sort.output.sorted_bam
     output:
-        index = f"{ANALYSIS_DIR}/Sorted_bam/{{genome}}/{{sample}}.sorted.bam.bai"
+        index = f"{ANALYSIS_DIR}/Mapped_reads/{{genome}}/{{sample}}.sorted.bam.bai"
 
     shell:
         """
