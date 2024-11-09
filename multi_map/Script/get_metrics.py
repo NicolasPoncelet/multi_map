@@ -2,8 +2,9 @@ from pathlib import Path
 import gzip
 import os
 import pandas as pd
+import sys
 
-def count_reads_number(fastq_dir:str) -> None :
+def count_reads_number(fastq_dir:str) -> pd.DataFrame :
 
     # Handling path and file names:
 
@@ -42,7 +43,7 @@ def count_reads_number(fastq_dir:str) -> None :
 
     return read_dataframe
 
-def get_reference_info(fasta_dir:str) -> None :
+def get_reference_info(fasta_dir:str) -> pd.DataFrame :
 
     # Handling path and file names:
 
@@ -83,18 +84,21 @@ def get_reference_info(fasta_dir:str) -> None :
 
 def main() :
     
-    # isolate_read_numbers:dict = {}
-    # dir = "/home/nponcelet/Documents/03-Script/00_Projet_Perso/02_Bioinfo/33_multi_map/Test_data/Fastq"
-    # dir_path = Path(dir)
+    try :
+        fastq_dir, fasta_dir = sys.argv[1], sys.argv[2]
 
-    # isolate_read_numbers = count_reads_number(dir_path)
+        fastq_metrics = count_reads_number(fastq_dir)
+        reference_metrics = get_reference_info(fasta_dir)
 
+        print("Fastq_metrics")
+        print(fastq_metrics)
 
-    dir = "/home/nponcelet/Documents/03-Script/00_Projet_Perso/02_Bioinfo/33_multi_map/Test_data/Reference"
-    reference_data = get_reference_info(dir)
+        print("reference_metrics")
+        print(reference_metrics)
 
-    print(reference_data)
+    except IndexError as err :
 
+        print(err)
 
 if __name__ == "__main__" :
 
