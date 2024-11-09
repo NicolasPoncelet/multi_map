@@ -17,7 +17,7 @@ print(REFERENCES)
 
 rule all:
     input:
-        expand("{analysis_dir}/Mapped_reads/{genome}/{sample}.sorted.bam.bai", 
+        expand("{analysis_dir}/Metrics/{genome}/{sample}.flagstat", 
             analysis_dir=ANALYSIS_DIR, genome=REFERENCES, sample=SAMPLES)
 
 rule bwa_index:
@@ -57,7 +57,7 @@ rule samtools_sort:
 
     shell:
         """
-        samtools sort -T {input.bam} -O bam -o {output.sorted_bam}
+        samtools sort {input.bam} -o {output.sorted_bam}
         """
 
 rule samtools_index:
@@ -71,3 +71,14 @@ rule samtools_index:
         samtools index {input.sorted_bam}
         """
 
+rule samtools_flagstat:
+    input:
+        sorted_bam = rules.samtools_sort.output.sorted_bam,
+        indexed_bam = rules.samtools_index.output.index
+    output:
+        flagstat = f"{ANALYSIS_DIR}/Metrics/{{genome}}/{{sample}}.flagstat"
+    
+    shell:
+        """
+        samtools flagstat {input.sorted_bam} > {output.flagstat}
+        """
