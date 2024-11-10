@@ -8,7 +8,6 @@ def gather_flagstats(list_of_flagstat,final_report:str) -> None :
     flagstat_dico = {}
 
     
-    
     regex_dico:dict = {
             "Total_reads" : r"(\d+ [\+] \d+)( in total \(QC-passed reads \+ QC-failed reads\))",
             "Primary_reads" : r"(\d+ [\+] \d+)( primary[\n])",
