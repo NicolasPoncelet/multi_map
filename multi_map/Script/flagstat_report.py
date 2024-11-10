@@ -66,9 +66,6 @@ def gather_flagstats(list_of_flagstat,final_report:str) -> None :
 
 if __name__ == "__main__" :
 
-    #list_of_flagstat, final_report = sys.argv[1], sys.argv[2]
-
-    list_of_flagstat = "/home/nponcelet/Documents/03-Script/00_Projet_Perso/02_Bioinfo/33_multi_map/Test_data/Metrics/C_lunata_genome"
-    final_report = "/home/nponcelet/Documents/03-Script/00_Projet_Perso/02_Bioinfo/33_multi_map/Test_data/Metrics/C_lunata_genome/test"
+    list_of_flagstat, final_report = sys.argv[1], sys.argv[2]
 
     gather_flagstats(list_of_flagstat,final_report)

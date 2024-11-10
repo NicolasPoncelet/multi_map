@@ -2,10 +2,12 @@ from Script import get_metrics, flagstat_report
 from pathlib import Path
 import os
 
+configfile:"Config/config.yaml"
+
 # Defining input directories.
-FASTQ_DIR = "/home/nponcelet/Documents/03-Script/00_Projet_Perso/02_Bioinfo/33_multi_map/Test_data/Fastq"
-REFERENCE_DIR = "/home/nponcelet/Documents/03-Script/00_Projet_Perso/02_Bioinfo/33_multi_map/Test_data/Reference"
-ANALYSIS_DIR = "/home/nponcelet/Documents/03-Script/00_Projet_Perso/02_Bioinfo/33_multi_map/Test_data"
+FASTQ_DIR = config["fastq_dir"]
+REFERENCE_DIR = config["reference_dir"]
+ANALYSIS_DIR = config["analysis_dir"]
 
 # Get from input directories samples and reference names.
 
