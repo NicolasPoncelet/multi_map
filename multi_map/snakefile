@@ -5,11 +5,12 @@ import os
 configfile:"Config/config.yaml"
 
 # Defining input directories.
+
 FASTQ_DIR = config["fastq_dir"]
 REFERENCE_DIR = config["reference_dir"]
 ANALYSIS_DIR = config["analysis_dir"]
 
-# Get from input directories samples and reference names.
+# Generate lists of files to use as input.
 
 fastq_files = [fastq for fastq in os.listdir(FASTQ_DIR) if fastq.endswith(".fastq.gz")]
 reference_files = [fasta for fasta in os.listdir(REFERENCE_DIR) if fasta.endswith((".fasta"))]
@@ -17,11 +18,13 @@ reference_files = [fasta for fasta in os.listdir(REFERENCE_DIR) if fasta.endswit
 SAMPLES = list(set([fastq.split("_R")[0] for fastq in fastq_files]))
 REFERENCES = [fasta.split(".")[0] for fasta in reference_files]
 
+#Snakemake rules:
+
 rule all:
     input:
         flagstat =expand("{analysis_dir}/Metrics/{genome}/{sample}.flagstat", 
             analysis_dir=ANALYSIS_DIR, genome=REFERENCES, sample=SAMPLES),
-        report = f"{ANALYSIS_DIR}/Metrics/final.txt"
+        report = f"{ANALYSIS_DIR}/Metrics/final.csv"
 
 rule bwa_index:
     input:
@@ -91,7 +94,7 @@ rule final_report:
         flagstat =expand("{analysis_dir}/Metrics/{genome}/{sample}.flagstat", 
             analysis_dir=ANALYSIS_DIR, genome=REFERENCES, sample=SAMPLES)
     output:
-        final_report = f"{ANALYSIS_DIR}/Metrics/final.txt"
+        final_report = f"{ANALYSIS_DIR}/Metrics/final.csv"
     
     run:
         flagstat_paths = [Path(flagstat) for flagstat in input.flagstat]

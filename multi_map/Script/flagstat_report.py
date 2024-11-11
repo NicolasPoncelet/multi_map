@@ -5,9 +5,8 @@ import pandas as pd
 
 def gather_flagstats(list_of_flagstat,final_report:str) -> None :
 
-    flagstat_dico = {}
+    flagstat_dictionaries:list[dict] = []
 
-    
     regex_dico:dict = {
             "Total_reads" : r"(\d+ [\+] \d+)( in total \(QC-passed reads \+ QC-failed reads\))",
             "Primary_reads" : r"(\d+ [\+] \d+)( primary[\n])",
@@ -30,9 +29,10 @@ def gather_flagstats(list_of_flagstat,final_report:str) -> None :
 
     for path_to_flagstat in list_of_flagstat :
 
-        flagstat_name:str = path_to_flagstat.stem  
+        current_dict:dict = {key:0 for key in regex_dico.keys() }
 
-        temp_list = [flagstat_name]
+        current_dict["Isolat"] = path_to_flagstat.stem 
+        current_dict["Reference"] = path_to_flagstat.parent.name
 
         with open(path_to_flagstat, 'r') as infile :
 
@@ -49,14 +49,13 @@ def gather_flagstats(list_of_flagstat,final_report:str) -> None :
 
                     if int(zero) != 0:
 
-                        print(f'Warning: {flagstat_name} != {zero}')
-                    temp_list.append(int(data_to_catch))
+                        print(f'Warning: {path_to_flagstat.stem} != {zero}')
 
-                flagstat_dico[flagstat_name] = temp_list
+                    current_dict[keys] = int(data_to_catch)
+
+        flagstat_dictionaries.append(current_dict)
     
-    df_flagstat = pd.DataFrame.from_dict(flagstat_dico,
-                                        columns=["Isolat"] + [ key for key in regex_dico.keys()],
-                                        orient='index')
+    df_flagstat = pd.DataFrame.from_dict(flagstat_dictionaries)
     
     df_flagstat.to_csv(path_to_final_report, 
                     index=False, mode='a', 
@@ -65,7 +64,7 @@ def gather_flagstats(list_of_flagstat,final_report:str) -> None :
 
 
 if __name__ == "__main__" :
-
+    
     list_of_flagstat, final_report = sys.argv[1], sys.argv[2]
 
     gather_flagstats(list_of_flagstat,final_report)
