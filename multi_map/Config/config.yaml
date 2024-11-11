@@ -1,8 +1,10 @@
-
-# Input folders:
+# Configuration file for Multimap pipeline
+# -----------------------------------------
+# Input directories (specify paths to data files):
 
 fastq_dir: "/home/nponcelet/Documents/03-Script/00_Projet_Perso/02_Bioinfo/33_multi_map/Test_data/Fastq"
 reference_dir: "/home/nponcelet/Documents/03-Script/00_Projet_Perso/02_Bioinfo/33_multi_map/Test_data/Reference"
 
-# Output folder:
+# Output directory (specify where results will be saved):
+
 analysis_dir: "/home/nponcelet/Documents/03-Script/00_Projet_Perso/02_Bioinfo/33_multi_map/Test_data"
