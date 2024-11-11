@@ -4,7 +4,17 @@ from re import findall
 import pandas as pd
 
 def gather_flagstats(list_of_flagstat,final_report:str) -> None :
+    """
+    Parse flagstat files and compile the data into a final CSV report.
 
+    Parameters
+    ----------
+    list_of_flagstat : list of Path
+        Paths to individual flagstat report files.
+    final_report : str
+        Path to the final report CSV file.
+    """
+    
     flagstat_dictionaries:list[dict] = []
 
     regex_dico:dict = {
