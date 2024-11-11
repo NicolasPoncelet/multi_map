@@ -21,12 +21,14 @@ REFERENCES = [fasta.split(".")[0] for fasta in reference_files]
 #Snakemake rules:
 
 rule all:
+    """Rule to execute the entire pipeline."""
     input:
         flagstat =expand("{analysis_dir}/Metrics/{genome}/{sample}.flagstat", 
             analysis_dir=ANALYSIS_DIR, genome=REFERENCES, sample=SAMPLES),
         report = f"{ANALYSIS_DIR}/Metrics/final.csv"
 
 rule bwa_index:
+    """Index reference genome files using BWA."""
     input:
         ref = f"{REFERENCE_DIR}/{{genome}}.fasta"
     output:
@@ -41,6 +43,7 @@ rule bwa_index:
         """
 
 rule bwa_map:
+    """Align paired FASTQ files to the reference genome using BWA and convert to BAM format."""
     input:
         read_1 = f"{FASTQ_DIR}/{{sample}}_R1.fastq.gz",
         read_2 = f"{FASTQ_DIR}/{{sample}}_R2.fastq.gz",
@@ -67,6 +70,7 @@ rule samtools_sort:
         """
 
 rule samtools_index:
+    """Index sorted BAM files."""
     input:
         sorted_bam = rules.samtools_sort.output.sorted_bam
     output:
@@ -78,6 +82,7 @@ rule samtools_index:
         """
 
 rule samtools_flagstat:
+    """Generate flagstat report for each BAM file."""
     input:
         sorted_bam = rules.samtools_sort.output.sorted_bam,
         indexed_bam = rules.samtools_index.output.index
@@ -90,6 +95,7 @@ rule samtools_flagstat:
         """
 
 rule final_report:
+    """Generate a final CSV report from all flagstat files."""
     input:
         flagstat =expand("{analysis_dir}/Metrics/{genome}/{sample}.flagstat", 
             analysis_dir=ANALYSIS_DIR, genome=REFERENCES, sample=SAMPLES)

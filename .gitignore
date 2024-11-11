@@ -3,6 +3,19 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+
+# Files related to Snakemake and mapping
+.snakemake/
+*.bam
+*.bam.bai
+*.fasta
+*.fastq.gz
+*.fasta.sa
+*.fasta.amb
+*.fasta.bwt
+*.fasta.ann
+*.fasta.pac
+
 # C extensions
 *.so
 
