@@ -1,4 +1,4 @@
-from Script import get_metrics, flagstat_report
+from Script import get_fastq_metrics, flagstat_report, get_reference_metrics
 from pathlib import Path
 import os
 
@@ -25,7 +25,9 @@ rule all:
     input:
         flagstat =expand("{analysis_dir}/Metrics/{genome}/{sample}.flagstat", 
             analysis_dir=ANALYSIS_DIR, genome=REFERENCES, sample=SAMPLES),
-        report = f"{ANALYSIS_DIR}/Metrics/final.csv"
+        report = f"{ANALYSIS_DIR}/Metrics/final.csv",
+        temporary_report = f"Ressources/flagstat.csv",
+        reference_report = f"Ressources/references.csv"
 
 rule bwa_index:
     """Index reference genome files using BWA."""
@@ -41,6 +43,16 @@ rule bwa_index:
         """
         bwa index {input.ref}
         """
+
+rule reference_metrics:
+    """Get information related to references used in CSV format for final report."""
+    input:
+        fasta_files=expand(f"{REFERENCE_DIR}/{{genome}}.fasta", genome=REFERENCES)
+    output:
+        reference_report="Ressources/references.csv"  # CSV file stored in Ressources for generating HTML report.
+    run:
+        fasta_paths = [Path(fasta) for fasta in input.fasta_files]
+        get_reference_metrics.get_reference_info(fasta_paths, output.reference_report)
 
 rule bwa_map:
     """Align paired FASTQ files to the reference genome using BWA and convert to BAM format."""
@@ -100,9 +112,10 @@ rule final_report:
         flagstat =expand("{analysis_dir}/Metrics/{genome}/{sample}.flagstat", 
             analysis_dir=ANALYSIS_DIR, genome=REFERENCES, sample=SAMPLES)
     output:
-        final_report = f"{ANALYSIS_DIR}/Metrics/final.csv"
+        user_report = f"{ANALYSIS_DIR}/Metrics/final.csv",
+        temporary_report = f"Ressources/flagstat.csv" # Same file stored in Ressources for generating HTML report.
     
     run:
         flagstat_paths = [Path(flagstat) for flagstat in input.flagstat]
-        flagstat_report.gather_flagstats(flagstat_paths, output.final_report)
         
+        flagstat_report.gather_flagstats(flagstat_paths, output.user_report, output.temporary_report)

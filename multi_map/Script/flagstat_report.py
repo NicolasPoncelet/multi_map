@@ -3,7 +3,7 @@ import os,sys
 from re import findall
 import pandas as pd
 
-def gather_flagstats(list_of_flagstat,final_report:str) -> None :
+def gather_flagstats(list_of_flagstat,user_report:str,temporary_report:str) -> None :
     """
     Parse flagstat files and compile the data into a final CSV report.
 
@@ -11,8 +11,10 @@ def gather_flagstats(list_of_flagstat,final_report:str) -> None :
     ----------
     list_of_flagstat : list of Path
         Paths to individual flagstat report files.
-    final_report : str
+    user_report : str
         Path to the final report CSV file.
+    temporary_report : str
+        Path to the temporary report CSV file used for the html file.
     """
     
     flagstat_dictionaries:list[dict] = []
@@ -35,7 +37,8 @@ def gather_flagstats(list_of_flagstat,final_report:str) -> None :
             "Mate_mapped_to_different_chr" :r"(\d+ [\+] \d+)( with mate mapped to a different chr[\n])"
             }
 
-    path_to_final_report:Path = Path(final_report)
+    path_to_final_report:Path = Path(user_report)
+    path_to_temp_report:Path = Path(temporary_report)
 
     for path_to_flagstat in list_of_flagstat :
 
@@ -71,10 +74,15 @@ def gather_flagstats(list_of_flagstat,final_report:str) -> None :
                     index=False, mode='a', 
                     header=not os.path.exists(path_to_final_report), 
                     sep=';', encoding='utf-8' )
+    
+    df_flagstat.to_csv(path_to_temp_report, # Generating a second report for HTML report in ressource folder.
+                    index=False, mode='a', 
+                    header=not os.path.exists(path_to_final_report), 
+                    sep=';', encoding='utf-8' )
 
 
 if __name__ == "__main__" :
     
-    list_of_flagstat, final_report = sys.argv[1], sys.argv[2]
+    list_of_flagstat, user_report, temporary_report = sys.argv[1], sys.argv[2], sys.argv[3]
 
-    gather_flagstats(list_of_flagstat,final_report)
+    gather_flagstats(list_of_flagstat,user_report,temporary_report)
