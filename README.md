@@ -10,7 +10,7 @@
 </div>
 
 <div style="flex: 1;">
-<img src="assets/rulegraph.svg" alt="rulegraph of the pipeline" />
+<img src="Assets/rulegraph.svg" alt="rulegraph of the pipeline" />
 </div>
 
 </div>
@@ -65,7 +65,8 @@ This repository contains several folders:
 - [ ] Add a conda env YAML file.
 - [ ] Add a script to handle input file.
 - [ ] Add metrics on References and on FASTQ files.
-- [ ] Add optionnal rule for trimming FASTQ files.
+- [ ] Add optional rule for trimming FASTQ files.
+- [ ] Add an optional step for tidying input files.
 
 
 ## Authors :envelope:

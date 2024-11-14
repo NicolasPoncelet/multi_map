@@ -56,24 +56,29 @@ library(tidyverse)
 
 ```{r, load_raw_data}
 
-df_reference <- read.delim("reference.csv",sep = ";")
+df_reference <- read.delim("references.csv",sep = ";")
 
 df_fastq <- read.delim("fastq.csv",sep = ";")
 
-df_flagstat <- read.delim("../final.csv",sep = ";")
+df_flagstat <- read.delim("flagstat.csv",sep = ";")
 
 ```
 
 
 
 ```{r,reference_table}
-
+df_reference%>%
+kbl()%>%
+kable_styling("striped")
 ```
 
 
 
 ```{r,fastq_table}
-
+df_fastq%>%
+  select(Isolat,Total_reads)%>%
+kbl()%>%
+kable_styling("striped")
 ```
 
 
@@ -81,10 +86,10 @@ df_flagstat <- read.delim("../final.csv",sep = ";")
 ```{r,heatmap}
 
 df_long <- df_flagstat%>%
-  select(Isolat,Genome,Properly_paired_percentage)
+  select(Isolat,Reference,Properly_paired_percentage)
 
 df_W<-pivot_wider(df_long, 
-                  names_from = Genome, 
+                  names_from = Reference, 
                   values_from = Properly_paired_percentage)
 
 

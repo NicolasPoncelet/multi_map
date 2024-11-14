@@ -3,7 +3,7 @@ import os
 import pandas as pd
 import sys
 
-def get_reference_info(list_of_fasta_path:Path,output_dir:str) -> None :
+def get(list_of_fasta_path:Path,output_dir:str) -> None :
 
     # Handling path:
 
@@ -54,7 +54,7 @@ def main() :
     try :
         fasta_dir, metric_file = sys.argv[1], sys.argv[2]
 
-        get_reference_info(fasta_dir,metric_file)
+        get(fasta_dir,metric_file)
 
     except IndexError as err :
 

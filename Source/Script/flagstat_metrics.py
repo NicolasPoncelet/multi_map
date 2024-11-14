@@ -1,9 +1,9 @@
 from pathlib import Path
-import os,sys
+import sys
 from re import findall
 import pandas as pd
 
-def gather_flagstats(list_of_flagstat,user_report:str,temporary_report:str) -> None :
+def get(list_of_flagstat,user_report:str,temporary_report:str) -> None :
     """
     Parse flagstat files and compile the data into a final CSV report.
 
@@ -69,15 +69,17 @@ def gather_flagstats(list_of_flagstat,user_report:str,temporary_report:str) -> N
         flagstat_dictionaries.append(current_dict)
     
     df_flagstat = pd.DataFrame.from_dict(flagstat_dictionaries)
+    df_flagstat["Primary_paired_percentage"] = round(df_flagstat['Reads_primary_mapped'] / df_flagstat['Total_reads'] * 100,2)
+    df_flagstat["Properly_paired_percentage"] = round(df_flagstat['Reads_properly_paired'] / df_flagstat['Primary_reads'] * 100,2)
     
     df_flagstat.to_csv(path_to_final_report, 
-                    index=False, mode='a', 
-                    header=not os.path.exists(path_to_final_report), 
+                    index=False, mode='w', 
+                    header= True, 
                     sep=';', encoding='utf-8' )
     
     df_flagstat.to_csv(path_to_temp_report, # Generating a second report for HTML report in ressource folder.
-                    index=False, mode='a', 
-                    header=not os.path.exists(path_to_final_report), 
+                    index=False, mode='w', 
+                    header=True, 
                     sep=';', encoding='utf-8' )
 
 
@@ -85,4 +87,4 @@ if __name__ == "__main__" :
     
     list_of_flagstat, user_report, temporary_report = sys.argv[1], sys.argv[2], sys.argv[3]
 
-    gather_flagstats(list_of_flagstat,user_report,temporary_report)
+    get(list_of_flagstat,user_report,temporary_report)

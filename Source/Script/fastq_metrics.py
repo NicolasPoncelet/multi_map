@@ -1,17 +1,14 @@
 from pathlib import Path
 import gzip
-import os
 import pandas as pd
 import sys
 
-def count_reads_number(fastq_dir:str,output_dir) -> None :
+def get(fastq_list:list[Path],output_dir) -> None :
 
     # Handling path:
     output_path = Path(output_dir)
-    dir_path:Path = Path(fastq_dir)
 
     isolate_read_numbers:dict = {}
-    fastq_list = [fastq for fastq in os.listdir(dir_path) if fastq.endswith(".fastq.gz")]
 
     # Loop through references FASTQ files.
 
@@ -20,11 +17,10 @@ def count_reads_number(fastq_dir:str,output_dir) -> None :
         # Initiating variables:
 
         read_count:int = 0
-        path_to_fastq:Path = dir_path / fastq
-        isolate_name:str = path_to_fastq.name.split("_R")[0] # Names are formated like IS001_R1.fastq.gz. Take left part before '_R'.
-        pair_read:str = path_to_fastq.name.split("_R")[1][0] # right part after '_R' and first element. either 1 or 2.
+        isolate_name:str = fastq.name.split("_R")[0] # Names are formated like IS001_R1.fastq.gz. Take left part before '_R'.
+        pair_read:str = fastq.name.split("_R")[1][0] # right part after '_R' and first element. either 1 or 2.
 
-        with gzip.open(path_to_fastq,mode="rt") as infile :
+        with gzip.open(fastq,mode="rt") as infile :
 
             for line in infile :
 
@@ -57,7 +53,7 @@ def main() :
     try :
         fastq_dir, metric_file = sys.argv[1], sys.argv[2]
 
-        count_reads_number(fastq_dir,metric_file)
+        get(fastq_dir,metric_file)
 
     except IndexError as err :
 
