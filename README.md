@@ -64,9 +64,10 @@ This repository contains several folders:
 
 - [ ] Add a conda env YAML file.
 - [ ] Add a script to handle input file.
-- [ ] Add metrics on References and on FASTQ files.
+- [X] Add metrics on References and on FASTQ files.
 - [ ] Add optional rule for trimming FASTQ files.
 - [ ] Add an optional step for tidying input files.
+- [X] Generate HMTL report file.
 
 
 ## Authors :envelope:

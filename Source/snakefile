@@ -143,9 +143,9 @@ rule get_flagstat_metrics:
 rule final_report:
     """Generate a final HTML report."""
     input:
-        flagstat_metrics = temp(rules.get_flagstat_metrics.output.temporary_report),
-        reference_metrics = temp(rules.get_reference_metrics.output.reference_report),
-        fastq_metrics = temp(rules.get_fastq_metrics.output.fastq_report),
+        flagstat_metrics = rules.get_flagstat_metrics.output.temporary_report,
+        reference_metrics = rules.get_reference_metrics.output.reference_report,
+        fastq_metrics = rules.get_fastq_metrics.output.fastq_report,
         input_report = Path("Ressources/report.qmd")
     output:
         html_report = f"{ANALYSIS_DIR}/Metrics/report.html",
@@ -155,4 +155,3 @@ rule final_report:
         """
         quarto render {input.input_report} && mv Ressources/report.html {output.html_report}
         """
-
