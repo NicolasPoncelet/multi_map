@@ -26,6 +26,8 @@ format:
     toc-location: left
     number-sections: true
     smooth-scroll: true
+    #output-file: Multi_map_report.html
+
 ---
 
 ```{r,echo=TRUE, include=FALSE}

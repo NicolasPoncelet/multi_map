@@ -29,7 +29,8 @@ rule all:
         report = f"{ANALYSIS_DIR}/Metrics/final.csv",
         temporary_report = f"Ressources/flagstat.csv",
         reference_report = f"Ressources/references.csv",
-        fastq_report = f"Ressources/fastq.csv"
+        fastq_report = f"Ressources/fastq.csv",
+        html_report = f"{ANALYSIS_DIR}/Metrics/report.html"
 
 rule bwa_index:
     """Index reference genome files using BWA."""
@@ -41,6 +42,8 @@ rule bwa_index:
         bwt = f'{REFERENCE_DIR}/{{genome}}.fasta.bwt',
         pac = f'{REFERENCE_DIR}/{{genome}}.fasta.pac',
         sa  = f'{REFERENCE_DIR}/{{genome}}.fasta.sa'
+    conda:
+        config["conda_env"]
     shell:
         """
         bwa index {input.ref}
@@ -63,10 +66,10 @@ rule get_fastq_metrics:
         sample=SAMPLES,
         read = ["_R1","_R2"]) 
     output:
-        reference_report="Ressources/fastq.csv"  # CSV file stored in Ressources for generating HTML report.
+        fastq_report="Ressources/fastq.csv"  # CSV file stored in Ressources for generating HTML report.
     run:
         fastq_paths = [Path(fastq) for fastq in input.fastq_files] # passer en path dans expand
-        fastq_metrics.get(fastq_paths, output.reference_report)
+        fastq_metrics.get(fastq_paths, output.fastq_report)
 
 
 rule bwa_map:
@@ -76,10 +79,10 @@ rule bwa_map:
         read_2 = f"{FASTQ_DIR}/{{sample}}_R2.fastq.gz",
         genome = f"{REFERENCE_DIR}/{{genome}}.fasta",
         index_files = rules.bwa_index.output,  
-
     output:
         bam = temp(f"{ANALYSIS_DIR}/Mapped_reads/{{genome}}/{{sample}}.bam"),
-
+    conda:
+        config["conda_env"]
     shell:
         """
         bwa mem {input.genome} {input.read_1} {input.read_2} | samtools view -Sb - > {output.bam}
@@ -90,7 +93,8 @@ rule samtools_sort:
         bam = rules.bwa_map.output.bam
     output:
         sorted_bam = f"{ANALYSIS_DIR}/Mapped_reads/{{genome}}/{{sample}}.sorted.bam"
-
+    conda:
+        config["conda_env"]
     shell:
         """
         samtools sort {input.bam} -o {output.sorted_bam}
@@ -102,7 +106,8 @@ rule samtools_index:
         sorted_bam = rules.samtools_sort.output.sorted_bam
     output:
         index = f"{ANALYSIS_DIR}/Mapped_reads/{{genome}}/{{sample}}.sorted.bam.bai"
-
+    conda:
+        config["conda_env"]
     shell:
         """
         samtools index {input.sorted_bam}
@@ -115,13 +120,14 @@ rule samtools_flagstat:
         indexed_bam = rules.samtools_index.output.index # mettre flagstat et index dans le all. retirer index d'ici le mettre dans la rule all plutot.
     output:
         flagstat = f"{ANALYSIS_DIR}/Metrics/{{genome}}/{{sample}}.flagstat"
-    
+    conda:
+        config["conda_env"]
     shell:
         """
         samtools flagstat {input.sorted_bam} > {output.flagstat}
         """
 
-rule final_report:
+rule get_flagstat_metrics:
     """Generate a final CSV report from all flagstat files."""
     input:
         flagstat =expand("{analysis_dir}/Metrics/{genome}/{sample}.flagstat", 
@@ -129,8 +135,24 @@ rule final_report:
     output:
         user_report = f"{ANALYSIS_DIR}/Metrics/final.csv",
         temporary_report = f"Ressources/flagstat.csv" # Same file stored in Ressources for generating HTML report.
-    
     run:
         flagstat_paths = [Path(flagstat) for flagstat in input.flagstat]
         
         flagstat_metrics.get(flagstat_paths, output.user_report, output.temporary_report)
+
+rule final_report:
+    """Generate a final HTML report."""
+    input:
+        flagstat_metrics = temp(rules.get_flagstat_metrics.output.temporary_report),
+        reference_metrics = temp(rules.get_reference_metrics.output.reference_report),
+        fastq_metrics = temp(rules.get_fastq_metrics.output.fastq_report),
+        input_report = Path("Ressources/report.qmd")
+    output:
+        html_report = f"{ANALYSIS_DIR}/Metrics/report.html",
+    conda:
+        config["conda_env"]
+    shell:
+        """
+        quarto render {input.input_report} && mv Ressources/report.html {output.html_report}
+        """
+
