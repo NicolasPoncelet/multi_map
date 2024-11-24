@@ -54,7 +54,7 @@ This repository contains several folders:
 ## Dependencies :floppy_disk:
 
 - Snakemake **7.32.4**
-- BWA **0.7.17-r1188**
+- BWA **0.7.18 he4a0461_1**
 - samtools **1.16.1**
 - Python **3.11.0**
 - pandas **2.2.3**
