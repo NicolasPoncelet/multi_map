@@ -2,11 +2,11 @@
 # -----------------------------------------
 # Input directories (specify paths to data files):
 
-fastq_dir: "/home/nponcelet/Documents/03-Script/00_Projet_Perso/02_Bioinfo/33_multi_map/Test_data/Fastq"
-reference_dir: "/home/nponcelet/Documents/03-Script/00_Projet_Perso/02_Bioinfo/33_multi_map/Test_data/Reference"
+fastq_dir: "/shared/home/nponcelet/lolium_gbs/03_Test_multimap/Test_data/Fastq"
+reference_dir: "/shared/home/nponcelet/lolium_gbs/03_Test_multimap/Test_data/Reference"
 
 conda_env: "Config/multimap_conda.yaml"
 
 # Output directory (specify where results will be saved):
 
-analysis_dir: "/home/nponcelet/Documents/03-Script/00_Projet_Perso/02_Bioinfo/33_multi_map/Test_data"
+analysis_dir: "/shared/home/nponcelet/lolium_gbs/03_Test_multimap/Test_data"

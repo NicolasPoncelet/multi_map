@@ -3,6 +3,9 @@ __default__:
     mem-per-cpu: 4G
     partition: fast
     job-name: '{rule}.{wildcards}'
+    time: '2:00:00'
+    output: 'logs/{rule}.{wildcards}.out'
+    error: 'logs/{rule}.{wildcards}.err'
 
 bwa_index:
     cpus-per-task: 1

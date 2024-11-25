@@ -7,17 +7,21 @@ configfile:"Config/config.yaml"
 
 # Defining input directories.
 
-FASTQ_DIR = config["fastq_dir"]
-REFERENCE_DIR = config["reference_dir"]
-ANALYSIS_DIR = config["analysis_dir"]
+FASTQ_DIR = Path(config["fastq_dir"]).resolve()
+REFERENCE_DIR = Path(config["reference_dir"]).resolve()
+ANALYSIS_DIR = Path(config["analysis_dir"]).resolve()
+
+print(f'{FASTQ_DIR=} \n {REFERENCE_DIR=} \n {ANALYSIS_DIR=}')
 
 # Generate lists of files to use as input.
+fastq_files = list(FASTQ_DIR.glob("*.fastq.gz"))
+reference_files = list(REFERENCE_DIR.glob("*.fasta"))
+print(f'{fastq_files=} \n {reference_files=}')
 
-fastq_files = [fastq for fastq in os.listdir(FASTQ_DIR) if fastq.endswith(".fastq.gz")]
-reference_files = [fasta for fasta in os.listdir(REFERENCE_DIR) if fasta.endswith((".fasta"))]
-
-SAMPLES = list(set([fastq.split("_R")[0] for fastq in fastq_files]))
-REFERENCES = [fasta.split(".")[0] for fasta in reference_files]
+SAMPLES = list(set([fastq.stem.split("_R")[0] for fastq in fastq_files]))
+print(SAMPLES)
+REFERENCES = [fasta.stem for fasta in reference_files]
+print(REFERENCES)
 
 #Snakemake rules:
 
