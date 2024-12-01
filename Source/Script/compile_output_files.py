@@ -21,24 +21,30 @@ def get_all_outputs() -> dict[str:list[Path]] :
     # Static output in dict:
 
     all_outputs:dict[str:[list[Path]]] = {
-        "report":[f"{path_to_analysis_dir}/Metrics/final.csv"],
-        "temporary_report":[f"Ressources/flagstat.csv"],
         "reference_report":[f"Ressources/references.csv"],
-        "fastq_report":[f"Ressources/fastq.csv"],
-        "html_report":[f'{path_to_analysis_dir}/Metrics/report.html']}
-    
-
+        "fastq_report":[f"Ressources/fastq.csv"]    
+    }
     # Dynamically build ouput dict given yaml values.
+
+    all_combinations = list( product(references_name,samples_name))
 
     if config_yaml["mapping"]["map_to_genome"] :
 
-        all_combinations = list( product(references_name,samples_name))
-        print(all_combinations)
-        all_flagstat_generated:list[str] = [f'{path_to_analysis_dir}/{genome}/{sample}.flagstat' for genome,sample in all_combinations ]
-        print(*all_flagstat_generated, sep ='\n')
+        all_flagstat_generated:list[str] = [f'{path_to_analysis_dir}/Metrics/{genome}/{sample}.flagstat' for genome,sample in all_combinations ]
 
-        all_outputs["flagstat"] = []
+        all_outputs["flagstat"] = all_flagstat_generated
+        all_outputs["html_genomic_report"] = [f'{path_to_analysis_dir}/Metrics/report.html']
+        all_outputs["temp_genomic_report"] = [f"Ressources/flagstat.csv"]
+        all_outputs["genomic_report"] = [f"{path_to_analysis_dir}/Metrics/final.csv"]
 
+    if not config_yaml["mapping"]["map_to_genome"] :
+
+        all_depth_generated:list[str] = [f'{path_to_analysis_dir}/Metrics/{genome}/{sample}.depth' for genome,sample in all_combinations ]
+
+        all_outputs["depth"] = all_depth_generated
+        all_outputs["html_gene_report"] = [f'{path_to_analysis_dir}/Metrics/report.html']
+        all_outputs["temp_gene_report"] = [f"Ressources/depth.csv"]
+        all_outputs["gene_report"] = [f"{path_to_analysis_dir}/Metrics/final.csv"]
 
 
 get_all_outputs()
