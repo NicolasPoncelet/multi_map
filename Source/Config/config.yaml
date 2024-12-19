@@ -10,3 +10,8 @@ conda_env: "Config/multimap_conda.yaml"
 # Output directory (specify where results will be saved):
 
 analysis_dir: "/shared/home/nponcelet/lolium_gbs/03_Test_multimap/Test_data"
+
+# Mapping target: choose between whole genome or genes
+
+mapping:
+  map_to_genome: true

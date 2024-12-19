@@ -14,4 +14,4 @@ conda activate /shared/home/nponcelet/gbs_blast/envs/multimap
 snakemake --jobs 100 \
           --verbose \
           --cluster-config Config/cluster.yaml \
-          --cluster "sbatch --partition={cluster.partition} --time={cluster.time} --cpus-per-task={cluster.cpus-per-task} --mem={cluster.mem-per-cpuqq} --output={cluster.output} --error={cluster.error}"
+          --cluster "sbatch --partition={cluster.partition} --time={cluster.time} --cpus-per-task={cluster.cpus-per-task} --mem={cluster.mem-per-cpu} --output={cluster.output} --error={cluster.error}"

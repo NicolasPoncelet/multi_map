@@ -2,9 +2,9 @@ from pathlib import Path
 from itertools import product
 import yaml
 
-def get_all_outputs() -> dict[str:list[Path]] :
+def compile_outputs() -> dict[str:list[Path]] :
 
-    path_to_yaml:Path = Path('../Config/config.yaml').resolve()
+    path_to_yaml:Path = Path('Config/config.yaml').resolve()
 
     with open(path_to_yaml, 'r') as infile:
         config_yaml = yaml.load(infile, Loader=yaml.SafeLoader)
@@ -24,14 +24,20 @@ def get_all_outputs() -> dict[str:list[Path]] :
         "reference_report":[f"Ressources/references.csv"],
         "fastq_report":[f"Ressources/fastq.csv"]    
     }
-    # Dynamically build ouput dict given yaml values.
-
+    
+    # Make cartesion product for depth, flagstat, bai output.
     all_combinations = list( product(references_name,samples_name))
+
+    all_bai_generated = [f'{path_to_analysis_dir}/Mapped_reads/{ref}/{sample}.sorted.bam.bai' for ref, sample in all_combinations]
+
+    all_outputs["index"] = all_bai_generated
+    
+    # Dynamically build ouput dict given yaml values.
 
     if config_yaml["mapping"]["map_to_genome"] :
 
         all_flagstat_generated:list[str] = [f'{path_to_analysis_dir}/Metrics/{genome}/{sample}.flagstat' for genome,sample in all_combinations ]
-
+       # print(all_flagstat_generated)
         all_outputs["flagstat"] = all_flagstat_generated
         all_outputs["html_genomic_report"] = [f'{path_to_analysis_dir}/Metrics/report.html']
         all_outputs["temp_genomic_report"] = [f"Ressources/flagstat.csv"]
@@ -45,6 +51,21 @@ def get_all_outputs() -> dict[str:list[Path]] :
         all_outputs["html_gene_report"] = [f'{path_to_analysis_dir}/Metrics/report.html']
         all_outputs["temp_gene_report"] = [f"Ressources/depth.csv"]
         all_outputs["gene_report"] = [f"{path_to_analysis_dir}/Metrics/final.csv"]
+    
+    return all_outputs
 
+def unpack(final_dict:dict[list[Path]]) -> list[Path] :
 
-get_all_outputs()
+    flatten_output:list[str] = [str(path) for list in final_dict.values() for path in list]
+
+    return flatten_output
+
+def get() :
+    
+    output_dic = compile_outputs() 
+    
+    return unpack(output_dic)
+
+if __name__ == "__main__" :
+
+     get() 

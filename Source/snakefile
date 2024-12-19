@@ -1,4 +1,4 @@
-from Script import fastq_metrics, flagstat_metrics, reference_metrics
+from Script import fastq_metrics, flagstat_metrics, reference_metrics, output_files
 
 from pathlib import Path
 import os
@@ -11,30 +11,19 @@ FASTQ_DIR = Path(config["fastq_dir"]).resolve()
 REFERENCE_DIR = Path(config["reference_dir"]).resolve()
 ANALYSIS_DIR = Path(config["analysis_dir"]).resolve()
 
-print(f'{FASTQ_DIR=} \n {REFERENCE_DIR=} \n {ANALYSIS_DIR=}')
-
 # Generate lists of files to use as input.
 fastq_files = list(FASTQ_DIR.glob("*.fastq.gz"))
 reference_files = list(REFERENCE_DIR.glob("*.fasta"))
-print(f'{fastq_files=} \n {reference_files=}')
 
 SAMPLES = list(set([fastq.stem.split("_R")[0] for fastq in fastq_files]))
-print(SAMPLES)
 REFERENCES = [fasta.stem for fasta in reference_files]
-print(REFERENCES)
 
 #Snakemake rules:
 
 rule all:
     """Rule to execute the entire pipeline."""
     input:
-        flagstat =expand("{analysis_dir}/Metrics/{genome}/{sample}.flagstat", 
-            analysis_dir=ANALYSIS_DIR, genome=REFERENCES, sample=SAMPLES),
-        report = f"{ANALYSIS_DIR}/Metrics/final.csv",
-        temporary_report = f"Ressources/flagstat.csv",
-        reference_report = f"Ressources/references.csv",
-        fastq_report = f"Ressources/fastq.csv",
-        html_report = f"{ANALYSIS_DIR}/Metrics/report.html"
+        output_files.get()
 
 rule bwa_index:
     """Index reference genome files using BWA."""
@@ -137,25 +126,25 @@ rule get_flagstat_metrics:
         flagstat =expand("{analysis_dir}/Metrics/{genome}/{sample}.flagstat", 
             analysis_dir=ANALYSIS_DIR, genome=REFERENCES, sample=SAMPLES)
     output:
-        user_report = f"{ANALYSIS_DIR}/Metrics/final.csv",
-        temporary_report = f"Ressources/flagstat.csv" # Same file stored in Ressources for generating HTML report.
+        genomic_report = f"{ANALYSIS_DIR}/Metrics/final.csv",
+        temp_genomic_report = f"Ressources/flagstat.csv" # Same file stored in Ressources for generating HTML report.
     run:
         flagstat_paths = [Path(flagstat) for flagstat in input.flagstat]
         
-        flagstat_metrics.get(flagstat_paths, output.user_report, output.temporary_report)
+        flagstat_metrics.get(flagstat_paths, output.genomic_report, output.temp_genomic_report)
 
-rule final_report:
+rule final_genome_report:
     """Generate a final HTML report."""
     input:
-        flagstat_metrics = rules.get_flagstat_metrics.output.temporary_report,
+        flagstat_metrics = rules.get_flagstat_metrics.output.temp_genomic_report,
         reference_metrics = rules.get_reference_metrics.output.reference_report,
         fastq_metrics = rules.get_fastq_metrics.output.fastq_report,
         input_report = Path("Ressources/report.qmd")
     output:
-        html_report = f"{ANALYSIS_DIR}/Metrics/report.html",
+        html_genomic_report = f"{ANALYSIS_DIR}/Metrics/report.html",
     conda:
         config["conda_env"]
     shell:
         """
-        quarto render {input.input_report} && mv Ressources/report.html {output.html_report}
+        quarto render {input.input_report} && mv Ressources/report.html {output.html_genomic_report}
         """
