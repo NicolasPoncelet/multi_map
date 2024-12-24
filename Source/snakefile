@@ -106,13 +106,15 @@ rule samtools_index:
         samtools index {input.sorted_bam}
         """
 
+# Genomic mapping
+
 rule samtools_flagstat:
     """Generate flagstat report for each BAM file."""
     input:
         sorted_bam = rules.samtools_sort.output.sorted_bam, 
         indexed_bam = rules.samtools_index.output.index # mettre flagstat et index dans le all. retirer index d'ici le mettre dans la rule all plutot.
     output:
-        flagstat = f"{ANALYSIS_DIR}/Metrics/{{genome}}/{{sample}}.flagstat"
+        flagstat = f"{ANALYSIS_DIR}/Metrics/Genome/{{genome}}/{{sample}}.flagstat"
     conda:
         config["conda_env"]
     shell:
@@ -123,10 +125,10 @@ rule samtools_flagstat:
 rule get_flagstat_metrics:
     """Generate a final CSV report from all flagstat files."""
     input:
-        flagstat =expand("{analysis_dir}/Metrics/{genome}/{sample}.flagstat", 
+        flagstat =expand("{analysis_dir}/Metrics/Genome//{genome}/{sample}.flagstat", 
             analysis_dir=ANALYSIS_DIR, genome=REFERENCES, sample=SAMPLES)
     output:
-        genomic_report = f"{ANALYSIS_DIR}/Metrics/final.csv",
+        genomic_report = f"{ANALYSIS_DIR}/Metrics/Genome//genomic_mapping.csv",
         temp_genomic_report = f"Ressources/flagstat.csv" # Same file stored in Ressources for generating HTML report.
     run:
         flagstat_paths = [Path(flagstat) for flagstat in input.flagstat]
@@ -139,12 +141,28 @@ rule final_genome_report:
         flagstat_metrics = rules.get_flagstat_metrics.output.temp_genomic_report,
         reference_metrics = rules.get_reference_metrics.output.reference_report,
         fastq_metrics = rules.get_fastq_metrics.output.fastq_report,
-        input_report = Path("Ressources/report.qmd")
+        input_report = Path("Ressources/genomic_report.qmd")
     output:
-        html_genomic_report = f"{ANALYSIS_DIR}/Metrics/report.html",
+        html_genomic_report = f"{ANALYSIS_DIR}/Metrics/Genome/genomic_report.html",
     conda:
         config["conda_env"]
     shell:
         """
-        quarto render {input.input_report} && mv Ressources/report.html {output.html_genomic_report}
+        quarto render {input.input_report} && mv Ressources/genomic_report.html {output.html_genomic_report}
+        """
+
+# Gene mapping
+
+rule samtools_depth:
+    """Generate depth report for each BAM file."""
+    input:
+        sorted_bam = rules.samtools_sort.output.sorted_bam, 
+        indexed_bam = rules.samtools_index.output.index # mettre flagstat et index dans le all. retirer index d'ici le mettre dans la rule all plutot.
+    output:
+        depth = f"{ANALYSIS_DIR}/Metrics/Gene/{{genome}}/{{sample}}.depth"
+    conda:
+        config["conda_env"]
+    shell:
+        """
+        samtools depth -a {input.sorted_bam} > {output.depth}
         """

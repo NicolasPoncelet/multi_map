@@ -3,7 +3,7 @@
 # Input directories (specify paths to data files):
 
 fastq_dir: "/shared/home/nponcelet/lolium_gbs/03_Test_multimap/Test_data/Fastq"
-reference_dir: "/shared/home/nponcelet/lolium_gbs/03_Test_multimap/Test_data/Reference"
+reference_dir: "/shared/home/nponcelet/lolium_gbs/03_Test_multimap/Test_data/Gene_ref"
 
 conda_env: "Config/multimap_conda.yaml"
 
@@ -14,4 +14,4 @@ analysis_dir: "/shared/home/nponcelet/lolium_gbs/03_Test_multimap/Test_data"
 # Mapping target: choose between whole genome or genes
 
 mapping:
-  map_to_genome: true
+  map_to_genome: false

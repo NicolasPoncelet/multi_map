@@ -36,21 +36,21 @@ def compile_outputs() -> dict[str:list[Path]] :
 
     if config_yaml["mapping"]["map_to_genome"] :
 
-        all_flagstat_generated:list[str] = [f'{path_to_analysis_dir}/Metrics/{genome}/{sample}.flagstat' for genome,sample in all_combinations ]
-       # print(all_flagstat_generated)
+        all_flagstat_generated:list[str] = [f'{path_to_analysis_dir}/Metrics/Genome//{genome}/{sample}.flagstat' for genome,sample in all_combinations ]
+
         all_outputs["flagstat"] = all_flagstat_generated
-        all_outputs["html_genomic_report"] = [f'{path_to_analysis_dir}/Metrics/report.html']
+        all_outputs["html_genomic_report"] = [f'{path_to_analysis_dir}/Metrics/Genome/genomic_report.html']
         all_outputs["temp_genomic_report"] = [f"Ressources/flagstat.csv"]
-        all_outputs["genomic_report"] = [f"{path_to_analysis_dir}/Metrics/final.csv"]
+        all_outputs["genomic_report"] = [f"{path_to_analysis_dir}/Metrics/Genome//genomic_mapping.csv"]
 
     if not config_yaml["mapping"]["map_to_genome"] :
 
-        all_depth_generated:list[str] = [f'{path_to_analysis_dir}/Metrics/{genome}/{sample}.depth' for genome,sample in all_combinations ]
+        all_depth_generated:list[str] = [f'{path_to_analysis_dir}/Metrics/Gene/{genome}/{sample}.depth' for genome,sample in all_combinations ]
 
         all_outputs["depth"] = all_depth_generated
-        all_outputs["html_gene_report"] = [f'{path_to_analysis_dir}/Metrics/report.html']
-        all_outputs["temp_gene_report"] = [f"Ressources/depth.csv"]
-        all_outputs["gene_report"] = [f"{path_to_analysis_dir}/Metrics/final.csv"]
+        #all_outputs["html_gene_report"] = [f'{path_to_analysis_dir}/Metrics/Gene/gene_report.html']
+        #all_outputs["temp_gene_report"] = [f"Ressources/depth.csv"]
+        #all_outputs["gene_report"] = [f"{path_to_analysis_dir}/Metrics/Gene/gene_mapping.csv"]
     
     return all_outputs
 
@@ -68,4 +68,4 @@ def get() :
 
 if __name__ == "__main__" :
 
-     get() 
+    get() 
