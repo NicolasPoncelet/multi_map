@@ -49,8 +49,8 @@ def compile_outputs() -> dict[str:list[Path]] :
 
         all_outputs["depth"] = all_depth_generated
         #all_outputs["html_gene_report"] = [f'{path_to_analysis_dir}/Metrics/Gene/gene_report.html']
-        #all_outputs["temp_gene_report"] = [f"Ressources/depth.csv"]
-        #all_outputs["gene_report"] = [f"{path_to_analysis_dir}/Metrics/Gene/gene_mapping.csv"]
+        all_outputs["temp_gene_report"] = [f"Ressources/depth.csv"]
+        all_outputs["gene_report"] = [f"{path_to_analysis_dir}/Metrics/Gene/gene_mapping.csv"]
     
     return all_outputs
 

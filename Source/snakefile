@@ -1,4 +1,4 @@
-from Script import fastq_metrics, flagstat_metrics, reference_metrics, output_files
+from Script import fastq_metrics, flagstat_metrics, reference_metrics, output_files, depth_metrics
 
 from pathlib import Path
 import os
@@ -125,7 +125,7 @@ rule samtools_flagstat:
 rule get_flagstat_metrics:
     """Generate a final CSV report from all flagstat files."""
     input:
-        flagstat =expand("{analysis_dir}/Metrics/Genome//{genome}/{sample}.flagstat", 
+        flagstat =expand("{analysis_dir}/Metrics/Genome/{genome}/{sample}.flagstat", 
             analysis_dir=ANALYSIS_DIR, genome=REFERENCES, sample=SAMPLES)
     output:
         genomic_report = f"{ANALYSIS_DIR}/Metrics/Genome//genomic_mapping.csv",
@@ -166,3 +166,15 @@ rule samtools_depth:
         """
         samtools depth -a {input.sorted_bam} > {output.depth}
         """
+
+rule get_depth_metrics:
+    """Generate a final CSV report from all depth files."""
+    input:
+        depth =expand("{analysis_dir}/Metrics/Gene/{genome}/{sample}.depth", 
+            analysis_dir=ANALYSIS_DIR, genome=REFERENCES, sample=SAMPLES)
+    output:
+        gene_report = f"{ANALYSIS_DIR}/Metrics/Gene/gene_mapping.csv",
+        temp_gene_report = f"Ressources/depth.csv" # Same file stored in Ressources for generating HTML report.
+    run:
+        depth_files_path =[Path(depth) for depth in input.depth]        
+        depth_metrics.get(depth_files_path, output.gene_report, output.temp_gene_report)
