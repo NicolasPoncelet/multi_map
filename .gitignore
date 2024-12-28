@@ -17,6 +17,9 @@ __pycache__/
 *.fasta.pac
 *.csv
 *.flagstat
+*.err
+*.out
+*.depth
 
 # C extensions
 *.so
