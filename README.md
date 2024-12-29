@@ -62,12 +62,14 @@ This repository contains several folders:
 
 ## Road map :dart:
 
-- [ ] Add a conda env YAML file.
-- [ ] Add a script to handle input file.
+- [X] Add a conda env YAML file.
+- [X] Add a script to handle input file.
 - [X] Add metrics on References and on FASTQ files.
 - [ ] Add optional rule for trimming FASTQ files.
 - [ ] Add an optional step for tidying input files.
 - [X] Generate HMTL report file.
+- [ ] Handle logs in a single file.
+- [ ] Use modules and single conda envs per rule.
 
 
 ## Authors :envelope:
