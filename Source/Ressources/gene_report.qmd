@@ -29,10 +29,6 @@ format:
 
 ---
 
-
-
-
-
 ```{r,echo=TRUE, include=FALSE}
 
 #Nettoyage de la cache.
@@ -65,7 +61,7 @@ df_reference <- read.delim("references.csv",sep = ";")
 
 df_fastq <- read.delim("fastq.csv",sep = ";")
 
-df_flagstat <- read.delim("flagstat.csv",sep = ";")
+df_depth <- read.delim("depth.csv",sep = "\t")
 
 ```
 
@@ -89,7 +85,9 @@ The Multimap pipeline performs the following steps:
 
 The reference FASTA files used in this analysis are listed in the table below:
 
+
 ```{r,reference_table}
+
 df_reference%>%
 kbl()%>%
 kable_styling("striped")
@@ -98,25 +96,25 @@ kable_styling("striped")
 The metrics for the FASTQ files are summarized in the table below:
 
 ```{r,fastq_table}
+
 df_fastq%>%
   select(Isolat,Total_reads)%>%
-kbl()%>%
-kable_styling("striped")
+  kbl()%>%
+  kable_styling("striped")
 ```
-
 
 # Alignment Results
 
-The percentages of properly paired reads for the different samples are visualized in a heatmap. The samples are displayed on the y-axis, and the reference sequences are shown on the x-axis. Higher mapping percentages are represented by brighter yellow colors, while lower percentages are represented by darker blue tones.
+The gene coverage for the different samples are visualized in a heatmap. The samples are displayed on the y-axis, and the reference sequences are shown on the x-axis. Higher gene coverage are represented by brighter yellow colors, while lower coverage are represented by darker blue tones.
 
 ```{r,heatmap}
 
-df_long <- df_flagstat %>%
-  select(Isolat, Reference, Properly_paired_percentage)
+df_long <- df_depth %>%
+  select(Isolat, Gene, Coverage)
 
 df_W <- pivot_wider(df_long, 
-                    names_from = Reference, 
-                    values_from = Properly_paired_percentage)
+                    names_from = Gene, 
+                    values_from = Coverage)
 
 df_W <- df_W %>%
   remove_rownames %>%
@@ -139,7 +137,7 @@ result_matrix <- tryCatch({
 error = function(e) {
 
 message("Une erreur est survenue : ", e$message)
-  
+
 heatmaply(mat_genome,
           show_dendrogram = c(FALSE, FALSE),
           plot_method = "plotly",

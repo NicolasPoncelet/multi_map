@@ -48,13 +48,13 @@ def compile_outputs() -> dict[str:list[Path]] :
         all_depth_generated:list[str] = [f'{path_to_analysis_dir}/Metrics/Gene/{genome}/{sample}.depth' for genome,sample in all_combinations ]
 
         all_outputs["depth"] = all_depth_generated
-        #all_outputs["html_gene_report"] = [f'{path_to_analysis_dir}/Metrics/Gene/gene_report.html']
+        all_outputs["html_gene_report"] = [f'{path_to_analysis_dir}/Metrics/Gene/gene_report.html']
         all_outputs["temp_gene_report"] = [f"Ressources/depth.csv"]
         all_outputs["gene_report"] = [f"{path_to_analysis_dir}/Metrics/Gene/gene_mapping.csv"]
     
     return all_outputs
 
-def unpack(final_dict:dict[list[Path]]) -> list[Path] :
+def unpack(final_dict:dict[list[Path]]) -> list[str] :
 
     flatten_output:list[str] = [str(path) for list in final_dict.values() for path in list]
 

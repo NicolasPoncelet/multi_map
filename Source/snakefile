@@ -64,7 +64,6 @@ rule get_fastq_metrics:
         fastq_paths = [Path(fastq) for fastq in input.fastq_files] # passer en path dans expand
         fastq_metrics.get(fastq_paths, output.fastq_report)
 
-
 rule bwa_map:
     """Align paired FASTQ files to the reference genome using BWA and convert to BAM format."""
     input:
@@ -178,3 +177,19 @@ rule get_depth_metrics:
     run:
         depth_files_path =[Path(depth) for depth in input.depth]        
         depth_metrics.get(depth_files_path, output.gene_report, output.temp_gene_report)
+
+rule final_gene_report:
+    """Generate a final HTML report."""
+    input:
+        depth_metrics = rules.get_depth_metrics.output.temp_gene_report,
+        reference_metrics = rules.get_reference_metrics.output.reference_report,
+        fastq_metrics = rules.get_fastq_metrics.output.fastq_report,
+        input_report = Path("Ressources/gene_report.qmd")
+    output:
+        html_gene_report = f"{ANALYSIS_DIR}/Metrics/Gene/gene_report.html",
+    conda:
+        config["conda_env"]
+    shell:
+        """
+        quarto render {input.input_report} && mv Ressources/gene_report.html {output.html_gene_report}
+        """
